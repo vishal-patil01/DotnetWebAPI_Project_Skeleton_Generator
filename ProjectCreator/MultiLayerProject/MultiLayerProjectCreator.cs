@@ -26,11 +26,11 @@ namespace ProjectCreator.MultiLayerProject
                 //API config
                 CommonHelper.CreateFile($"{projectName}.API/Controllers/SampleController.cs", GetSampleControllerCode($"{projectName}.API"));
                 CommonHelper.CreateFile($"{projectName}.API/Extensions/SwaggerConfiguration.cs", SwaggerConfiguration.GetSwaggerConfiguration($"{projectName}.API"));
-                CommonHelper.CreateFile($"{projectName}.API/Extensions/ServiceCollectionExtension.cs", ServiceCollectionExtension.GetServiceCollectionConfiguration($"{projectName}.API"));
+                CommonHelper.CreateFile($"{projectName}.API/Extensions/ServiceCollectionExtension.cs", ServiceCollectionExtension.GetServiceCollectionConfiguration($"{projectName}.API",false));
                 CommonHelper.CreateFile($"{projectName}.API/appsettings.json", AppSettingsCreator.GetJsonConfiguration(projectName));
                 CommonHelper.CreateFile($"{projectName}.API/appsettings.Development.json", AppSettingsCreator.GetJsonConfiguration(projectName));
                 CommonHelper.CreateFile($"{projectName}.API/appsettings.Production.json", AppSettingsCreator.GetJsonConfiguration(projectName));
-                CommonHelper.CreateFile($"{projectName}.API/Middlewares/ExceptionHandlerMiddleware.cs", ExceptionMiddlewareCreator.GetMiddlewareConfiguration($"{projectName}.API"));
+                CommonHelper.CreateFile($"{projectName}.API/Middlewares/ExceptionHandlerMiddleware.cs", ExceptionMiddlewareCreator.GetMiddlewareConfiguration($"{projectName}.API",false));
 
                 //Model Config
                 CommonHelper.CreateFile($"{projectName}.Models/Contracts/BaseResponse.cs", BaseResponseCreator.GetBaseResponseConfiguration(projectName));
@@ -156,8 +156,8 @@ using Newtonsoft.Json;
 using Serilog;
 using Serilog.Events;
 using {projectName}.Extensions;
-using {projectName}.Repository.Implementation;
-using {projectName}.Repository.Interface;
+using {projectName.Replace(".API", "")}.Repository.Implementation;
+using {projectName.Replace(".API", "")}.Repository.Interface;
 
 #region Configuring builder
 var builder = WebApplication.CreateBuilder(args);

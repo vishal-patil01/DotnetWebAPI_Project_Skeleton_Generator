@@ -8,10 +8,11 @@ namespace ProjectCreator.Helpers.ClassesGenerators
 {
     public static class ServiceCollectionExtension
     {
-        public static string GetServiceCollectionConfiguration(string projectName)
+        public static string GetServiceCollectionConfiguration(string projectName, bool isSinglelayer = true)
         {
-            return $@"using {projectName}.Repository.Implementation;
-using {projectName}.Repository.Interface;
+            var import = isSinglelayer ? projectName : projectName.Replace(".API", "");
+            return $@"using {import}.Repository.Implementation;
+using {import}.Repository.Interface;
 using {projectName}.Middlewares;
 using Newtonsoft.Json;
 

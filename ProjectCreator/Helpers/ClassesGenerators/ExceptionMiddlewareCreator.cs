@@ -8,9 +8,10 @@ namespace ProjectCreator.Helpers.ClassesGenerators
 {
     public class ExceptionMiddlewareCreator
     {
-        public static string GetMiddlewareConfiguration(string projectName)
+        public static string GetMiddlewareConfiguration(string projectName, bool isSinglelayer = true)
         {
-            return @$"using {projectName}.Models.Contracts;
+            var import = isSinglelayer ? projectName : projectName.Replace(".API", "");
+            return @$"using {import}.Models.Contracts;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using System.Net;
