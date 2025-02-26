@@ -33,6 +33,7 @@ namespace ProjectCreator.SingleLayerProject
                 CommonHelper.CreateFile($"{projectName}.API/appsettings.Development.json", AppSettingsCreator.GetJsonConfiguration(projectName, databaseType));
                 CommonHelper.CreateFile($"{projectName}.API/appsettings.Production.json", AppSettingsCreator.GetJsonConfiguration(projectName, databaseType));
                 CommonHelper.CreateFile($"{projectName}.API/Middlewares/ExceptionHandlerMiddleware.cs", ExceptionMiddlewareCreator.GetMiddlewareConfiguration($"{projectName}.API"));
+                CommonHelper.CreateFile($"{projectName}.API/Middlewares/SecurityHeadersMiddleware.cs", SecurityHeadersGenerator.GetSecurityHeadersConfig($"{projectName}.API"));
 
                 projectName = $"{projectName}.API";
 
@@ -104,6 +105,7 @@ namespace ProjectCreator.SingleLayerProject
             CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Serilog.Extensions.Hosting");
             CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Serilog.Sinks.Console");
             CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Serilog.Sinks.File");
+            CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package NWebsec.AspNetCore.Middleware");
 
             // Add NuGet packages to Service project
             CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Microsoft.AspNetCore.Mvc");

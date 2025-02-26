@@ -57,6 +57,7 @@ namespace {projectName}.Extensions
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }}
+            app.UseSecurityHeader();
             app.UseResponseCompression();
             app.UseMiddleware<ExceptionHandlerMiddleware>();
             app.UseHttpsRedirection();
