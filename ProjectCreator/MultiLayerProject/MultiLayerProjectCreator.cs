@@ -1,4 +1,5 @@
-﻿using ProjectCreator.Helpers;
+﻿using ProjectCreator.Enums;
+using ProjectCreator.Helpers;
 using ProjectCreator.Helpers.ClassesGenerators.API;
 using ProjectCreator.Helpers.ClassesGenerators.Models;
 using ProjectCreator.Helpers.ClassesGenerators.Repository.Helpers;
@@ -8,12 +9,13 @@ using ProjectCreator.Helpers.ClassesGenerators.Services.Helper;
 using ProjectCreator.Helpers.ClassesGenerators.Services.Implementation;
 using ProjectCreator.Helpers.ClassesGenerators.Services.Interface;
 using ProjectCreator.Helpers.JsonGenerators;
+using System.Diagnostics;
 
 namespace ProjectCreator.MultiLayerProject
 {
     public class MultiLayerProjectCreator
     {
-        public static void CreateMultiLayerProject(string projectName, char dotnetVersion)
+        public static void CreateMultiLayerProject(string projectName, char dotnetVersion, DatabaseType databaseType)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("Creating Multilayer Web API Project...");
@@ -22,16 +24,16 @@ namespace ProjectCreator.MultiLayerProject
             CommonHelper.ExecuteStep("Creating the projects", () => CreateProject(projectName));
             CommonHelper.ExecuteStep("Adding project references", () => AddProjectReference(projectName));
             CommonHelper.ExecuteStep("Creating folder structure", () => CreteNecessaryFolders(projectName));
-            CommonHelper.ExecuteStep("Adding NuGet packages", () => AddNugetPackages(projectName, dotnetVersion));
+            CommonHelper.ExecuteStep("Adding NuGet packages", () => AddNugetPackages(projectName, dotnetVersion, databaseType));
             CommonHelper.ExecuteStep("Creating sample controller", () =>
             {
                 //API config
                 CommonHelper.CreateFile($"{projectName}.API/Controllers/SampleController.cs", SampleControllerCreator.GetSampleControllerConfiguration($"{projectName}.API", false));
                 CommonHelper.CreateFile($"{projectName}.API/Extensions/SwaggerConfiguration.cs", SwaggerConfiguration.GetSwaggerConfiguration($"{projectName}.API"));
                 CommonHelper.CreateFile($"{projectName}.API/Extensions/ServiceCollectionExtension.cs", ServiceCollectionExtension.GetServiceCollectionConfiguration($"{projectName}.API", false));
-                CommonHelper.CreateFile($"{projectName}.API/appsettings.json", AppSettingsCreator.GetJsonConfiguration(projectName));
-                CommonHelper.CreateFile($"{projectName}.API/appsettings.Development.json", AppSettingsCreator.GetJsonConfiguration(projectName));
-                CommonHelper.CreateFile($"{projectName}.API/appsettings.Production.json", AppSettingsCreator.GetJsonConfiguration(projectName));
+                CommonHelper.CreateFile($"{projectName}.API/appsettings.json", AppSettingsCreator.GetJsonConfiguration(projectName, databaseType));
+                CommonHelper.CreateFile($"{projectName}.API/appsettings.Development.json", AppSettingsCreator.GetJsonConfiguration(projectName, databaseType));
+                CommonHelper.CreateFile($"{projectName}.API/appsettings.Production.json", AppSettingsCreator.GetJsonConfiguration(projectName, databaseType));
                 CommonHelper.CreateFile($"{projectName}.API/Middlewares/ExceptionHandlerMiddleware.cs", ExceptionMiddlewareCreator.GetMiddlewareConfiguration($"{projectName}.API", false));
 
                 //Model Config
@@ -44,11 +46,11 @@ namespace ProjectCreator.MultiLayerProject
                 CommonHelper.CreateFile($"{projectName}.Services/Implementation/SampleService.cs", SampleServiceCreator.GetServiceConfiguration(projectName));
 
                 //Repository config 
-                CommonHelper.CreateFile($"{projectName}.Repository/Helpers/DapperContext.cs", DapperContextCreator.GetDapperContextConfiguration(projectName));
-                CommonHelper.CreateFile($"{projectName}.Repository/Helpers/IDapperContext.cs", IDapperContextCreator.GetIDapperContextConfiguration(projectName));
+                CommonHelper.CreateFile($"{projectName}.Repository/Helpers/DapperContext.cs", DapperContextCreator.GetDapperContextConfiguration(projectName, databaseType));
+                CommonHelper.CreateFile($"{projectName}.Repository/Helpers/IDapperContext.cs", IDapperContextCreator.GetIDapperContextConfiguration(projectName, databaseType));
 
                 CommonHelper.CreateFile($"{projectName}.Repository/Interface/ISampleRepository.cs", ISampleRepositoryCreator.GetIRepositoryConfiguration(projectName));
-                CommonHelper.CreateFile($"{projectName}.Repository/Implementation/SampleRepository.cs", SampleRepositoryCreator.GetRepositoryConfiguration(projectName));
+                CommonHelper.CreateFile($"{projectName}.Repository/Implementation/SampleRepository.cs", SampleRepositoryCreator.GetRepositoryConfiguration(projectName, databaseType));
 
             });
             Console.ForegroundColor = ConsoleColor.Green;
@@ -102,7 +104,7 @@ namespace ProjectCreator.MultiLayerProject
             CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj reference {projectName}.Services/{projectName}.Services.csproj");
         }
 
-        private static void AddNugetPackages(string projectName, char DotNetVersionFirstChar)
+        private static void AddNugetPackages(string projectName, char DotNetVersionFirstChar, DatabaseType databaseType)
         {
             // Add NuGet packages to API project
             CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Microsoft.Extensions.Configuration");
@@ -119,10 +121,27 @@ namespace ProjectCreator.MultiLayerProject
             CommonHelper.RunCommand($"dotnet add {projectName}.Services/{projectName}.Services.csproj package Microsoft.AspNetCore.Mvc");
 
             // Add NuGet packages to Repository project
-            CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package Microsoft.Data.SqlClient");
             CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package Microsoft.Extensions.Configuration");
-            CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package Dapper");
 
+            if (databaseType == DatabaseType.MSSqlServer)
+            {
+                CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package Dapper");
+                CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package Microsoft.Data.SqlClient");
+            }
+            else if (databaseType == DatabaseType.MongoDB)
+            {
+                CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package MongoDB.Driver");
+            }
+            else if (databaseType == DatabaseType.MySql)
+            {
+                CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package Dapper");
+                CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package MySql.Data");
+            }
+            else
+            {
+                CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package Dapper");
+                CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package Oracle.ManagedDataAccess.Core");
+            }
         }
 
         private static void CreateProject(string projectName)

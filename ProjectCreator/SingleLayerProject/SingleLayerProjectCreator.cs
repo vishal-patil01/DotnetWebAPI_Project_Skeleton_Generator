@@ -1,4 +1,5 @@
-﻿using ProjectCreator.Helpers;
+﻿using ProjectCreator.Enums;
+using ProjectCreator.Helpers;
 using ProjectCreator.Helpers.ClassesGenerators.API;
 using ProjectCreator.Helpers.ClassesGenerators.Models;
 using ProjectCreator.Helpers.ClassesGenerators.Repository.Helpers;
@@ -13,7 +14,7 @@ namespace ProjectCreator.SingleLayerProject
 {
     public class SingleLayerProjectCreator
     {
-        public static void CreateSingleLayerProjectCreator(string projectName, char dotnetVersion)
+        public static void CreateSingleLayerProjectCreator(string projectName, char dotnetVersion, DatabaseType databaseType)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("Creating Single Layer Web API Project...");
@@ -21,16 +22,16 @@ namespace ProjectCreator.SingleLayerProject
             CommonHelper.ExecuteStep("Creating the solution", () => CommonHelper.RunCommand($"dotnet new sln -n {projectName}"));
             CommonHelper.ExecuteStep("Creating the projects", () => CreateProject(projectName));
             CommonHelper.ExecuteStep("Creating folder structure", () => CreteNecessaryFolders(projectName));
-            CommonHelper.ExecuteStep("Adding NuGet packages", () => AddNugetPackages(projectName, dotnetVersion));
+            CommonHelper.ExecuteStep("Adding NuGet packages", () => AddNugetPackages(projectName, dotnetVersion, databaseType));
             CommonHelper.ExecuteStep("Creating sample controller", () =>
             {
                 //API config
                 CommonHelper.CreateFile($"{projectName}.API/Controllers/SampleController.cs", SampleControllerCreator.GetSampleControllerConfiguration($"{projectName}.API"));
                 CommonHelper.CreateFile($"{projectName}.API/Extensions/SwaggerConfiguration.cs", SwaggerConfiguration.GetSwaggerConfiguration($"{projectName}.API"));
                 CommonHelper.CreateFile($"{projectName}.API/Extensions/ServiceCollectionExtension.cs", ServiceCollectionExtension.GetServiceCollectionConfiguration($"{projectName}.API"));
-                CommonHelper.CreateFile($"{projectName}.API/appsettings.json", AppSettingsCreator.GetJsonConfiguration(projectName));
-                CommonHelper.CreateFile($"{projectName}.API/appsettings.Development.json", AppSettingsCreator.GetJsonConfiguration(projectName));
-                CommonHelper.CreateFile($"{projectName}.API/appsettings.Production.json", AppSettingsCreator.GetJsonConfiguration(projectName));
+                CommonHelper.CreateFile($"{projectName}.API/appsettings.json", AppSettingsCreator.GetJsonConfiguration(projectName, databaseType));
+                CommonHelper.CreateFile($"{projectName}.API/appsettings.Development.json", AppSettingsCreator.GetJsonConfiguration(projectName, databaseType));
+                CommonHelper.CreateFile($"{projectName}.API/appsettings.Production.json", AppSettingsCreator.GetJsonConfiguration(projectName, databaseType));
                 CommonHelper.CreateFile($"{projectName}.API/Middlewares/ExceptionHandlerMiddleware.cs", ExceptionMiddlewareCreator.GetMiddlewareConfiguration($"{projectName}.API"));
 
                 projectName = $"{projectName}.API";
@@ -45,10 +46,10 @@ namespace ProjectCreator.SingleLayerProject
 
                 //Repository config
                 CommonHelper.CreateFile($"{projectName}/Repository/Interface/ISampleRepository.cs", ISampleRepositoryCreator.GetIRepositoryConfiguration($"{projectName}"));
-                CommonHelper.CreateFile($"{projectName}/Repository/Implementation/SampleRepository.cs", SampleRepositoryCreator.GetRepositoryConfiguration($"{projectName}"));
-              
-                CommonHelper.CreateFile($"{projectName}/Repository/Helpers/DapperContext.cs", DapperContextCreator.GetDapperContextConfiguration($"{projectName}"));
-                CommonHelper.CreateFile($"{projectName}/Repository/Helpers/IDapperContext.cs", IDapperContextCreator.GetIDapperContextConfiguration($"{projectName}"));
+                CommonHelper.CreateFile($"{projectName}/Repository/Implementation/SampleRepository.cs", SampleRepositoryCreator.GetRepositoryConfiguration($"{projectName}", databaseType));
+
+                CommonHelper.CreateFile($"{projectName}/Repository/Helpers/DapperContext.cs", DapperContextCreator.GetDapperContextConfiguration($"{projectName}", databaseType));
+                CommonHelper.CreateFile($"{projectName}/Repository/Helpers/IDapperContext.cs", IDapperContextCreator.GetIDapperContextConfiguration($"{projectName}", databaseType));
 
             });
             Console.ForegroundColor = ConsoleColor.Green;
@@ -91,7 +92,7 @@ namespace ProjectCreator.SingleLayerProject
             });
         }
 
-        private static void AddNugetPackages(string projectName, char DotNetVersionFirstChar)
+        private static void AddNugetPackages(string projectName, char DotNetVersionFirstChar, DatabaseType databaseType)
         {
             // Add NuGet packages to API project
             CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Microsoft.Extensions.Configuration");
@@ -112,6 +113,25 @@ namespace ProjectCreator.SingleLayerProject
             CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Microsoft.Extensions.Configuration");
             CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Dapper");
 
+            if (databaseType == DatabaseType.MSSqlServer)
+            {
+                CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Microsoft.Data.SqlClient");
+                CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Dapper");
+            }
+            else if (databaseType == DatabaseType.MongoDB)
+            {
+                CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package MongoDB.Driver");
+            }
+            else if (databaseType == DatabaseType.MySql)
+            {
+                CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Dapper");
+                CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package MySql.Data");
+            }
+            else
+            {
+                CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Dapper");
+                CommonHelper.RunCommand($"dotnet add {projectName}.API/{projectName}.API.csproj package Oracle.ManagedDataAccess.Core");
+            }
         }
         private static void CreateProject(string projectName)
         {
