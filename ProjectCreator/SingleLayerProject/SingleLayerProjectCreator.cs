@@ -162,7 +162,7 @@ builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
 #endregion
 
 #region Add Services to the Container.
-builder.Services.AddApplicationServiceExtension(builder.Configuration);
+builder.Services.SetupDependency(builder.Configuration);
 
 //Logging Configuration
 builder.Logging.ClearProviders();
@@ -177,7 +177,7 @@ builder.Host.UseSerilog((ctx, lc) => lc
 
 #region Configure the HTTP request pipeline.
 var app = builder.Build();
-app.UseApplicationServiceExtension();
+app.ConfigureMiddlewares();
 app.Run();
 #endregion
 ";

@@ -11,6 +11,7 @@ using {import}.Repository.Helpers;
 using {import}.Services.Interface;
 using {import}.Services.Implementation;
 using {projectName}.Middlewares;
+using Microsoft.AspNetCore.ResponseCompression;
 using Newtonsoft.Json;
 
 
@@ -18,7 +19,7 @@ namespace {projectName}.Extensions
 {{
     public static class ServiceExtension
     {{
-        public static IServiceCollection AddApplicationServiceExtension(this IServiceCollection serviceCollection, IConfiguration configuration)
+        public static IServiceCollection SetupDependency(this IServiceCollection serviceCollection, IConfiguration configuration)
         {{
             serviceCollection.AddControllers()
               .AddJsonOptions(jsonOptions =>
@@ -32,16 +33,22 @@ namespace {projectName}.Extensions
               }});
 
             // add service extensions
+            serviceCollection.AddResponseCompression(opt =>
+                             {{
+                                 opt.EnableForHttps = true;
+                                 opt.Providers.Add<GzipCompressionProvider>();
+                             }});
             serviceCollection.AddHttpContextAccessor();
             serviceCollection.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             serviceCollection.AddSingleton<IDapperContext,DapperContext>();
             serviceCollection.AddSingleton<ISampleRepository,SampleRepository>();
             serviceCollection.AddSingleton<ISampleService,SampleService>();
             serviceCollection.AddSwaggerGen();
+
             return serviceCollection;
         }}
 
-        public static IApplicationBuilder UseApplicationServiceExtension(this WebApplication app)
+        public static IApplicationBuilder ConfigureMiddlewares(this WebApplication app)
         {{
             // Configure the HTTP request pipeline.
 
@@ -50,6 +57,7 @@ namespace {projectName}.Extensions
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }}
+            app.UseResponseCompression();
             app.UseMiddleware<ExceptionHandlerMiddleware>();
             app.UseHttpsRedirection();
 
