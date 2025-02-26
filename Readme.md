@@ -9,6 +9,13 @@ Welcome to the Dotnet Web API Project Skeleton Generator! This tool helps you qu
 - **Serilog Integration**: Adds robust logging capabilities with Serilog, ensuring proper logging throughout your application.
 - **Default DB Connection Configuration**: Pre-configured database connection settings in `appsettings.json`.
 - **DapperContext**: Automatically creates a database connection using Dapper, eliminating the need for manual configuration.
+- **Response Compression**: Enhances performance by compressing the response data sent to clients.
+- **Security Headers**: Adds security headers to HTTP responses to enhance the application's security.
+- **Multiple Database Support**: Offers seamless integration with multiple databases, including:
+  - **MS-SQL**: Support for Microsoft SQL Server.
+  - **MongoDB**: Support for MongoDB.
+  - **MySQL**: Support for MySQL.
+  - **Oracle**: Support for Oracle.
 
 ## Steps to Generate a Project
 
@@ -16,7 +23,7 @@ Welcome to the Dotnet Web API Project Skeleton Generator! This tool helps you qu
 
 2. **Enter Project Name**: Provide a name for your new project.
 
-    ![Enter Project Name](Images/ChooseProject1.png)
+    ![Enter Project Name](Images/AddProjectName1.png)
 
 3. **Choose Project Type**:
     - **1** for Multilayer Project
@@ -24,7 +31,15 @@ Welcome to the Dotnet Web API Project Skeleton Generator! This tool helps you qu
 
     ![Choose Project Type](Images/ChooseType2.png)
 
-4. **Generate the Solution**: The tool will generate the necessary files and structure for your chosen project type.
+4. **Choose Database Type**:
+    - **1** for MsSQL Server
+    - **2** for Mongo DB
+    - **3** for MySQL
+    - **4** for Oracle
 
-    ![Generate Solution](Images/GenerateSolution3.png)
+    ![Choose Project Type](Images/ChhoseDB3.png)
+
+5. **Generate the Solution**: The tool will generate the necessary files and structure for your chosen project type.
+
+    ![Generate Solution](Images/GenerateSolution4.png)
 
