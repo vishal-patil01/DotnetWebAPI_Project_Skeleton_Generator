@@ -1,11 +1,13 @@
 ﻿using ProjectCreator.Helpers;
-using ProjectCreator.Helpers.ClassesGenerators;
+using ProjectCreator.Helpers.ClassesGenerators.API;
+using ProjectCreator.Helpers.ClassesGenerators.Models;
+using ProjectCreator.Helpers.ClassesGenerators.Repository.Helpers;
+using ProjectCreator.Helpers.ClassesGenerators.Repository.Implementation;
+using ProjectCreator.Helpers.ClassesGenerators.Repository.Interface;
+using ProjectCreator.Helpers.ClassesGenerators.Services.Helper;
+using ProjectCreator.Helpers.ClassesGenerators.Services.Implementation;
+using ProjectCreator.Helpers.ClassesGenerators.Services.Interface;
 using ProjectCreator.Helpers.JsonGenerators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProjectCreator.MultiLayerProject
 {
@@ -16,7 +18,7 @@ namespace ProjectCreator.MultiLayerProject
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("Creating Multilayer Web API Project...");
             Console.ForegroundColor = ConsoleColor.White;
-            CommonHelper.ExecuteStep("Creating the solution", () => CommonHelper.RunCommand($"dotnet new sln -n {projectName}"));
+            CommonHelper.ExecuteStep("Creating the solution", () => CommonHelper.RunCommand($"dotnet new sln -n {projectName} && dotnet new gitignore"));
             CommonHelper.ExecuteStep("Creating the projects", () => CreateProject(projectName));
             CommonHelper.ExecuteStep("Adding project references", () => AddProjectReference(projectName));
             CommonHelper.ExecuteStep("Creating folder structure", () => CreteNecessaryFolders(projectName));
@@ -24,13 +26,13 @@ namespace ProjectCreator.MultiLayerProject
             CommonHelper.ExecuteStep("Creating sample controller", () =>
             {
                 //API config
-                CommonHelper.CreateFile($"{projectName}.API/Controllers/SampleController.cs", GetSampleControllerCode($"{projectName}.API"));
+                CommonHelper.CreateFile($"{projectName}.API/Controllers/SampleController.cs", SampleControllerCreator.GetSampleControllerConfiguration($"{projectName}.API", false));
                 CommonHelper.CreateFile($"{projectName}.API/Extensions/SwaggerConfiguration.cs", SwaggerConfiguration.GetSwaggerConfiguration($"{projectName}.API"));
-                CommonHelper.CreateFile($"{projectName}.API/Extensions/ServiceCollectionExtension.cs", ServiceCollectionExtension.GetServiceCollectionConfiguration($"{projectName}.API",false));
+                CommonHelper.CreateFile($"{projectName}.API/Extensions/ServiceCollectionExtension.cs", ServiceCollectionExtension.GetServiceCollectionConfiguration($"{projectName}.API", false));
                 CommonHelper.CreateFile($"{projectName}.API/appsettings.json", AppSettingsCreator.GetJsonConfiguration(projectName));
                 CommonHelper.CreateFile($"{projectName}.API/appsettings.Development.json", AppSettingsCreator.GetJsonConfiguration(projectName));
                 CommonHelper.CreateFile($"{projectName}.API/appsettings.Production.json", AppSettingsCreator.GetJsonConfiguration(projectName));
-                CommonHelper.CreateFile($"{projectName}.API/Middlewares/ExceptionHandlerMiddleware.cs", ExceptionMiddlewareCreator.GetMiddlewareConfiguration($"{projectName}.API",false));
+                CommonHelper.CreateFile($"{projectName}.API/Middlewares/ExceptionHandlerMiddleware.cs", ExceptionMiddlewareCreator.GetMiddlewareConfiguration($"{projectName}.API", false));
 
                 //Model Config
                 CommonHelper.CreateFile($"{projectName}.Models/Contracts/BaseResponse.cs", BaseResponseCreator.GetBaseResponseConfiguration(projectName));
@@ -38,9 +40,15 @@ namespace ProjectCreator.MultiLayerProject
                 //Service Config
                 CommonHelper.CreateFile($"{projectName}.Services/Helpers/ResponseHelper.cs", ResponseHelperCreator.GetResponseHelperConfiguration(projectName));
 
+                CommonHelper.CreateFile($"{projectName}.Services/Interface/ISampleService.cs", ISampleServiceCreator.GetIServiceConfiguration(projectName));
+                CommonHelper.CreateFile($"{projectName}.Services/Implementation/SampleService.cs", SampleServiceCreator.GetServiceConfiguration(projectName));
+
                 //Repository config 
-                CommonHelper.CreateFile($"{projectName}.Repository/Implementation/DapperContext.cs", DapperContextCreator.GetDapperContextConfiguration(projectName));
-                CommonHelper.CreateFile($"{projectName}.Repository/Interface/IDapperContext.cs", IDapperContextCreator.GetIDapperContextConfiguration(projectName));
+                CommonHelper.CreateFile($"{projectName}.Repository/Helpers/DapperContext.cs", DapperContextCreator.GetDapperContextConfiguration(projectName));
+                CommonHelper.CreateFile($"{projectName}.Repository/Helpers/IDapperContext.cs", IDapperContextCreator.GetIDapperContextConfiguration(projectName));
+
+                CommonHelper.CreateFile($"{projectName}.Repository/Interface/ISampleRepository.cs", ISampleRepositoryCreator.GetIRepositoryConfiguration(projectName));
+                CommonHelper.CreateFile($"{projectName}.Repository/Implementation/SampleRepository.cs", SampleRepositoryCreator.GetRepositoryConfiguration(projectName));
 
             });
             Console.ForegroundColor = ConsoleColor.Green;
@@ -55,7 +63,7 @@ namespace ProjectCreator.MultiLayerProject
             CommonHelper.CreateDirectory($"{projectName}.API/Extensions");
             CommonHelper.CreateDirectory($"{projectName}.API/Controllers"); // Explicitly create the Controllers directory
                                                                             // Modify Program.cs to use AddServices
-            ModifyProgramCs($"{projectName}.API",$"{projectName}.API/Program.cs");
+            ModifyProgramCs($"{projectName}.API", $"{projectName}.API/Program.cs");
 
             // Create folders in Models project
             CommonHelper.CreateDirectory($"{projectName}.Models/Entities");
@@ -113,6 +121,7 @@ namespace ProjectCreator.MultiLayerProject
             // Add NuGet packages to Repository project
             CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package Microsoft.Data.SqlClient");
             CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package Microsoft.Extensions.Configuration");
+            CommonHelper.RunCommand($"dotnet add {projectName}.Repository/{projectName}.Repository.csproj package Dapper");
 
         }
 
@@ -128,25 +137,6 @@ namespace ProjectCreator.MultiLayerProject
             CommonHelper.RunCommand($"dotnet sln {projectName}.sln add {projectName}.Services/{projectName}.Services.csproj");
             CommonHelper.RunCommand($"dotnet sln {projectName}.sln add {projectName}.Models/{projectName}.Models.csproj");
             CommonHelper.RunCommand($"dotnet sln {projectName}.sln add {projectName}.Repository/{projectName}.Repository.csproj");
-        }
-        static string GetSampleControllerCode(string projectName)
-        {
-            return $@"
-using Microsoft.AspNetCore.Mvc;
-
-namespace {projectName}.Controllers
-{{
-    [ApiController]
-    [Route(""[controller]"")]
-    public class SampleController : ControllerBase
-    {{
-        [HttpGet]
-        public IActionResult Get()
-        {{
-            return Ok(""Hello, World!"");
-        }}
-    }}
-}}";
         }
 
         static void ModifyProgramCs(string projectName, string path)

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using ProjectCreator.Helpers;
+﻿using System.Diagnostics;
 using ProjectCreator.MultiLayerProject;
+using ProjectCreator.SingleLayerProject;
 
 namespace ProjectCreator
 {
