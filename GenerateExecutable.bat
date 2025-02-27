@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 REM Define the target runtimes
-set runtimes=win-x64 win-x86 linux-x64
+set runtimes=win-x64 win-x86 linux-x64 osx-arm64 linux-arm
 
 REM Loop through each runtime and publish
 for %%r in (%runtimes%) do (

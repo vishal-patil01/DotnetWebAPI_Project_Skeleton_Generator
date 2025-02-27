@@ -40,6 +40,7 @@ namespace ProjectCreator
             do
             {
                 Console.WriteLine($"Please enter project name [dont add api word in project name]\n");
+                Console.WriteLine($"[ To use this tool dotnet sdk must be installed on your system ]\n");
                 projectName = Console.ReadLine();
                 if (!string.IsNullOrEmpty(projectName))
                 {

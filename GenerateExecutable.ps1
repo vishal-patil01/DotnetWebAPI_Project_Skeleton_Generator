@@ -1,5 +1,5 @@
 # Define the target runtimes
-$runtimes = @("win-x64", "win-x86", "linux-x64")
+$runtimes = @("win-x64", "win-x86", "linux-x64", "osx-arm64", "linux-arm")
 
 # Loop through each runtime and publish
 foreach ($runtime in $runtimes) {
