@@ -2,9 +2,9 @@
 
 namespace ProjectCreator.Helpers.ClassesGenerators.Repository.Helpers
 {
-    internal class IDapperContextCreator
+    internal class IDBHelperCreator
     {
-        public static string GetIDapperContextConfiguration(string projectName, DatabaseType databaseType)
+        public static string GetIDBHelperConfiguration(string projectName, DatabaseType databaseType)
         {
             string method = string.Empty;
             string dbImports = string.Empty;
@@ -31,7 +31,7 @@ namespace ProjectCreator.Helpers.ClassesGenerators.Repository.Helpers
 
 namespace {projectName}.Repository.Helpers
 {{
-    public interface IDapperContext
+    public interface IDBHelper
     {{
         {method}
     }}

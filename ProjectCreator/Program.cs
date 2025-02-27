@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using ProjectCreator.Enums;
+using ProjectCreator.Helpers;
 using ProjectCreator.MultiLayerProject;
 using ProjectCreator.SingleLayerProject;
 
@@ -40,45 +41,50 @@ namespace ProjectCreator
             {
                 Console.WriteLine($"Please enter project name [dont add api word in project name]\n");
                 projectName = Console.ReadLine();
-                Console.WriteLine("================== Project type Selection ====================");
-                Console.WriteLine("Please choose Project type:");
-                Console.WriteLine("1 Multilayer Web API Project ");
-                Console.WriteLine("2 Singlelayer Web API Project ");
-                Console.WriteLine("0 For Exit");
-                Console.WriteLine("==============================================================");
-
-                var input = Console.ReadLine();
-
-                if (int.TryParse(input, out choice))
+                if (!string.IsNullOrEmpty(projectName))
                 {
-                    if (choice == 0)
-                    {
-                        Environment.Exit(0);
-                    }
-                    var databaseType = GetDatabaseType();
+                    CommonHelper.CreateDirectory(projectName);
+                    Directory.SetCurrentDirectory($"{Directory.GetCurrentDirectory()}/{projectName}");
+                    Console.WriteLine("================== Project type Selection ====================");
+                    Console.WriteLine("Please choose Project type:");
+                    Console.WriteLine("1 Multilayer Web API Project ");
+                    Console.WriteLine("2 Singlelayer Web API Project ");
+                    Console.WriteLine("0 For Exit");
+                    Console.WriteLine("==============================================================");
 
-                    switch (choice)
+                    var input = Console.ReadLine();
+
+                    if (int.TryParse(input, out choice))
                     {
-                        case 1:
-                            MultiLayerProjectCreator.CreateMultiLayerProject(projectName, DotNetVersionFirstChar, databaseType);
-                            break;
-                        case 2:
-                            SingleLayerProjectCreator.CreateSingleLayerProjectCreator(projectName, DotNetVersionFirstChar, databaseType);
-                            break;
-                        default:
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("Please enter a valid option.");
-                            Console.ForegroundColor = ConsoleColor.Gray;
-                            break;
+                        if (choice == 0)
+                        {
+                            Environment.Exit(0);
+                        }
+                        var databaseType = GetDatabaseType();
+
+                        switch (choice)
+                        {
+                            case 1:
+                                MultiLayerProjectCreator.CreateMultiLayerProject(projectName, DotNetVersionFirstChar, databaseType);
+                                break;
+                            case 2:
+                                SingleLayerProjectCreator.CreateSingleLayerProjectCreator(projectName, DotNetVersionFirstChar, databaseType);
+                                break;
+                            default:
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Please enter a valid option.");
+                                Console.ForegroundColor = ConsoleColor.Gray;
+                                break;
+                        }
                     }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Please enter a valid option.");
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                    }
+                    Console.ReadKey();
                 }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Please enter a valid option.");
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                }
-                Console.ReadKey();
             } while (string.IsNullOrEmpty(projectName));
         }
         public static DatabaseType GetDatabaseType()

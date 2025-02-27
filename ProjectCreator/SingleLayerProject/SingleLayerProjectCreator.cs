@@ -1,6 +1,8 @@
 ﻿using ProjectCreator.Enums;
 using ProjectCreator.Helpers;
-using ProjectCreator.Helpers.ClassesGenerators.API;
+using ProjectCreator.Helpers.ClassesGenerators.API.Controllers;
+using ProjectCreator.Helpers.ClassesGenerators.API.Extensions;
+using ProjectCreator.Helpers.ClassesGenerators.API.Middleware;
 using ProjectCreator.Helpers.ClassesGenerators.Models;
 using ProjectCreator.Helpers.ClassesGenerators.Repository.Helpers;
 using ProjectCreator.Helpers.ClassesGenerators.Repository.Implementation;
@@ -49,8 +51,8 @@ namespace ProjectCreator.SingleLayerProject
                 CommonHelper.CreateFile($"{projectName}/Repository/Interface/ISampleRepository.cs", ISampleRepositoryCreator.GetIRepositoryConfiguration($"{projectName}"));
                 CommonHelper.CreateFile($"{projectName}/Repository/Implementation/SampleRepository.cs", SampleRepositoryCreator.GetRepositoryConfiguration($"{projectName}", databaseType));
 
-                CommonHelper.CreateFile($"{projectName}/Repository/Helpers/DapperContext.cs", DapperContextCreator.GetDapperContextConfiguration($"{projectName}", databaseType));
-                CommonHelper.CreateFile($"{projectName}/Repository/Helpers/IDapperContext.cs", IDapperContextCreator.GetIDapperContextConfiguration($"{projectName}", databaseType));
+                CommonHelper.CreateFile($"{projectName}/Repository/Helpers/DBHelper.cs", DBHelperCreator.GetDBHelperConfiguration(projectName, databaseType));
+                CommonHelper.CreateFile($"{projectName}/Repository/Helpers/IDBHelper.cs", IDBHelperCreator.GetIDBHelperConfiguration(projectName, databaseType));
 
             });
             Console.ForegroundColor = ConsoleColor.Green;

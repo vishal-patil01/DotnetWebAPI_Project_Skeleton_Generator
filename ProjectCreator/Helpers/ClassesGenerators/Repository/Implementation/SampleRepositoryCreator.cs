@@ -49,9 +49,9 @@ namespace {projectName}.Repository.Implementation
 {{
     public class SampleRepository : ISampleRepository
     {{
-        private readonly IDapperContext _context;
+        private readonly IDBHelper _context;
 
-        public SampleRepository(IDapperContext context)
+        public SampleRepository(IDBHelper context)
         {{
             _context = context;
         }}

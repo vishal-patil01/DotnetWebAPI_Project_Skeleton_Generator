@@ -1,4 +1,4 @@
-﻿namespace ProjectCreator.Helpers.ClassesGenerators.API
+﻿namespace ProjectCreator.Helpers.ClassesGenerators.API.Middleware
 {
     public class ExceptionMiddlewareCreator
     {

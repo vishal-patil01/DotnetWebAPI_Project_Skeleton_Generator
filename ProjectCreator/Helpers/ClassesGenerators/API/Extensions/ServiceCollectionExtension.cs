@@ -1,4 +1,4 @@
-﻿namespace ProjectCreator.Helpers.ClassesGenerators.API
+﻿namespace ProjectCreator.Helpers.ClassesGenerators.API.Extensions
 {
     public static class ServiceCollectionExtension
     {
@@ -40,7 +40,7 @@ namespace {projectName}.Extensions
                              }});
             serviceCollection.AddHttpContextAccessor();
             serviceCollection.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            serviceCollection.AddSingleton<IDapperContext,DapperContext>();
+            serviceCollection.AddSingleton<IDBHelper,DBHelper>();
             serviceCollection.AddSingleton<ISampleRepository,SampleRepository>();
             serviceCollection.AddSingleton<ISampleService,SampleService>();
             serviceCollection.AddSwaggerGen();

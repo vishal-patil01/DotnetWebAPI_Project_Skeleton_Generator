@@ -2,9 +2,9 @@
 
 namespace ProjectCreator.Helpers.ClassesGenerators.Repository.Helpers
 {
-    internal class DapperContextCreator
+    internal class DBHelperCreator
     {
-        public static string GetDapperContextConfiguration(string projectName, DatabaseType databaseType)
+        public static string GetDBHelperConfiguration(string projectName, DatabaseType databaseType)
         {
             string method = string.Empty;
             string dbImports = string.Empty;
@@ -41,12 +41,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace {projectName}.Repository.Helpers
 {{
-    public class DapperContext : IDapperContext
+    public class DBHelper : IDBHelper
     {{
         private readonly IConfiguration _iConfiguration;
         private readonly string _connString;
         private readonly string _customConnString;
-        public DapperContext(IConfiguration iConfiguration)
+        public DBHelper(IConfiguration iConfiguration)
         {{
             _iConfiguration = iConfiguration;
             _connString = _iConfiguration.GetConnectionString(""DbConnection"");

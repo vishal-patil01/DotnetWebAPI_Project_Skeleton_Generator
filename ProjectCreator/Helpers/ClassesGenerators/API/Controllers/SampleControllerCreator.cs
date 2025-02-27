@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectCreator.Helpers.ClassesGenerators.API
+namespace ProjectCreator.Helpers.ClassesGenerators.API.Controllers
 {
     public class SampleControllerCreator
     {
